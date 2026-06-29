@@ -41,9 +41,26 @@ const routes = [
       {
         path: 'lost-found',
         name: 'LostFound',
-        component: () => import('@/views/Placeholder.vue'),
-        props: { title: '失物招领', icon: '🔍', desc: '捡到 / 丢失物品信息发布' },
+        component: () => import('@/views/LostFoundList.vue'),
         meta: { title: '失物招领' },
+      },
+      {
+        path: 'lost-found/create',
+        name: 'LostFoundCreate',
+        component: () => import('@/views/CreateLostFound.vue'),
+        meta: { title: '发布信息' },
+      },
+      {
+        path: 'lost-found/:id',
+        name: 'LostFoundDetail',
+        component: () => import('@/views/LostFoundDetail.vue'),
+        meta: { title: '物品详情' },
+      },
+      {
+        path: 'lost-found/:id/edit',
+        name: 'LostFoundEdit',
+        component: () => import('@/views/CreateLostFound.vue'),
+        meta: { title: '编辑信息' },
       },
       {
         path: 'secondhand',
