@@ -65,9 +65,26 @@ const routes = [
       {
         path: 'secondhand',
         name: 'SecondHand',
-        component: () => import('@/views/Placeholder.vue'),
-        props: { title: '二手市场', icon: '🛒', desc: '闲置物品交易信息' },
+        component: () => import('@/views/SecondHandList.vue'),
         meta: { title: '二手市场' },
+      },
+      {
+        path: 'secondhand/create',
+        name: 'SecondHandCreate',
+        component: () => import('@/views/CreateSecondHand.vue'),
+        meta: { title: '发布商品' },
+      },
+      {
+        path: 'secondhand/:id',
+        name: 'SecondHandDetail',
+        component: () => import('@/views/SecondHandDetail.vue'),
+        meta: { title: '商品详情' },
+      },
+      {
+        path: 'secondhand/:id/edit',
+        name: 'SecondHandEdit',
+        component: () => import('@/views/CreateSecondHand.vue'),
+        meta: { title: '编辑商品' },
       },
       // --- 交流社区 ---
       {
