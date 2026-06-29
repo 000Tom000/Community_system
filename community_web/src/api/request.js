@@ -2,7 +2,7 @@ import axios from 'axios'
 import { ElMessage } from 'element-plus'
 
 const request = axios.create({
-  baseURL: 'http://localhost:8080/api',
+  baseURL: '/api',  // 相对路径，开发走 Vite proxy，生产走 Nginx
   timeout: 60000,  // 60s，上传大文件时需要更长时间
 })
 

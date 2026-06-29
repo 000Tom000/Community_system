@@ -27,5 +27,5 @@ export function rateResource(id, rating) {
 
 /** 下载链接 */
 export function getDownloadUrl(id) {
-  return `http://localhost:8080/api/resources/${id}/download`
+  return `/api/resources/${id}/download`
 }
