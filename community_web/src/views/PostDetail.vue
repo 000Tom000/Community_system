@@ -4,6 +4,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import { getPost, deletePost, toggleLike, getLikeStatus, togglePin, toggleSolved } from '@/api/post'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import CommentSection from '@/components/CommentSection.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -141,9 +142,8 @@ const isAdmin = () => userStore.user?.role === 'admin'
         <el-button @click="router.push('/forum')">返回列表</el-button>
       </div>
 
-      <!-- 评论区占位 -->
-      <el-divider />
-      <el-empty description="🚧 评论功能即将上线" />
+      <!-- 评论区 -->
+      <CommentSection :post-id="Number(route.params.id)" />
     </div>
   </div>
 </template>
