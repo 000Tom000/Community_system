@@ -40,6 +40,7 @@ public class UserServiceImpl implements UserService {
         user.setUsername(username);
         user.setPassword(PasswordUtil.encrypt(password));
         user.setNickname(nickname);
+        user.setAvatar("/uploads/avatars/default.svg");  // 默认头像
         user.setRole("user");
         user.setStatus(0);
         user.setToken(UUID.randomUUID().toString().replace("-", ""));
@@ -102,7 +103,10 @@ public class UserServiceImpl implements UserService {
         if (StringUtils.hasText(updated.getNickname())) {
             user.setNickname(updated.getNickname());
         }
-        user.setAvatar(updated.getAvatar());
+        // 头像：空字符串视为不修改，null 视为不修改，有内容才更新
+        if (StringUtils.hasText(updated.getAvatar())) {
+            user.setAvatar(updated.getAvatar());
+        }
         user.setEmail(updated.getEmail());
         user.setPhone(updated.getPhone());
         user.setGender(updated.getGender());

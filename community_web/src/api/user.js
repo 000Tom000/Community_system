@@ -34,3 +34,10 @@ export function changePassword(oldPassword, newPassword) {
 export function logout() {
   return request.post('/users/logout')
 }
+
+/** 上传头像 — FormData multipart */
+export function uploadAvatar(file) {
+  const fd = new FormData()
+  fd.append('file', file)
+  return request.post('/users/avatar', fd)
+}

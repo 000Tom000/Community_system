@@ -2,9 +2,8 @@
 import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
-import { updateProfile, changePassword } from '@/api/user'
+import { updateProfile, changePassword, uploadAvatar } from '@/api/user'
 import { ElMessage } from 'element-plus'
-
 const router = useRouter()
 const userStore = useUserStore()
 
@@ -25,6 +24,7 @@ const profileForm = reactive({
   major: '',
 })
 const profileLoading = ref(false)
+const avatarUploading = ref(false)
 
 onMounted(() => {
   const u = userStore.user
@@ -41,6 +41,34 @@ onMounted(() => {
     })
   }
 })
+
+/** 头像上传 */
+async function handleAvatarChange(file) {
+  // 客户端校验
+  if (!file.raw.type.startsWith('image/')) {
+    ElMessage.warning('请选择图片文件')
+    return
+  }
+  if (file.raw.size > 2 * 1024 * 1024) {
+    ElMessage.warning('头像不能超过 2MB')
+    return
+  }
+  avatarUploading.value = true
+  try {
+    const res = await uploadAvatar(file.raw)
+    profileForm.avatar = res.data.url
+    ElMessage.success('头像上传成功')
+  } catch { /* 拦截器已提示 */ }
+  finally { avatarUploading.value = false }
+}
+
+/** 获取头像完整 URL */
+function avatarUrl() {
+  const av = profileForm.avatar
+  if (!av) return ''
+  // 外部链接直接使用，相对路径由 Vite proxy 转发
+  return av
+}
 
 async function handleSaveProfile() {
   profileLoading.value = true
@@ -101,8 +129,23 @@ async function handleChangePwd() {
             <el-form-item label="昵称">
               <el-input v-model="profileForm.nickname" />
             </el-form-item>
-            <el-form-item label="头像URL">
-              <el-input v-model="profileForm.avatar" placeholder="输入头像图片链接" />
+            <el-form-item label="头像">
+              <div class="avatar-upload">
+                <el-avatar :size="80" :src="avatarUrl()" style="margin-right:16px" />
+                <el-upload
+                  :auto-upload="false"
+                  :show-file-list="false"
+                  :on-change="handleAvatarChange"
+                  accept="image/*"
+                >
+                  <el-button :loading="avatarUploading" type="primary" size="small">
+                    点击上传
+                  </el-button>
+                  <template #tip>
+                    <div class="el-upload__tip">支持 JPG/PNG/GIF，最大 2MB</div>
+                  </template>
+                </el-upload>
+              </div>
             </el-form-item>
             <el-form-item label="性别">
               <el-radio-group v-model="profileForm.gender">
@@ -166,5 +209,9 @@ async function handleChangePwd() {
   max-width: 1000px;
   margin: 0 auto;
   padding: 20px 0;
+}
+.avatar-upload {
+  display: flex;
+  align-items: center;
 }
 </style>

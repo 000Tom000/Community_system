@@ -1,11 +1,20 @@
 package com.tom.community.controller;
 
+import com.tom.community.common.BusinessException;
 import com.tom.community.common.Result;
 import com.tom.community.model.User;
 import com.tom.community.service.UserService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * 用户接口 — RESTful，前缀 /api/users
@@ -15,6 +24,9 @@ import java.util.Map;
 public class UserController {
 
     private final UserService userService;
+
+    @Value("${app.upload.dir:./uploads}")
+    private String uploadDir;
 
     public UserController(UserService userService) {
         this.userService = userService;
@@ -81,5 +93,46 @@ public class UserController {
         User current = userService.getCurrentUser(token);
         userService.logout(current.getId());
         return Result.success();
+    }
+
+    /** 上传头像 */
+    @PostMapping("/avatar")
+    public Result<Map<String, String>> uploadAvatar(
+            @RequestHeader("X-Token") String token,
+            @RequestParam MultipartFile file) {
+        userService.getCurrentUser(token);  // 验证登录
+        if (file == null || file.isEmpty()) {
+            throw new BusinessException("请选择图片");
+        }
+        if (file.getSize() > 2 * 1024 * 1024) {
+            throw new BusinessException("头像不能超过 2MB");
+        }
+        // 校验图片类型
+        String contentType = file.getContentType();
+        if (contentType == null || !contentType.startsWith("image/")) {
+            throw new BusinessException("请上传图片文件");
+        }
+
+        // 保存到 uploads/avatars/
+        String originalName = file.getOriginalFilename();
+        String ext = ".jpg";
+        if (originalName != null && originalName.contains(".")) {
+            ext = originalName.substring(originalName.lastIndexOf(".")).toLowerCase();
+            if (!ext.matches("\\.(jpg|jpeg|png|gif|webp|bmp)$")) {
+                ext = ".jpg";
+            }
+        }
+        String savedName = UUID.randomUUID().toString().replace("-", "") + ext;
+        Path dir = Paths.get(uploadDir, "avatars").toAbsolutePath().normalize();
+        try {
+            Files.createDirectories(dir);
+            file.transferTo(dir.resolve(savedName).toFile());
+        } catch (IOException e) {
+            throw new BusinessException("头像上传失败: " + e.getMessage());
+        }
+
+        Map<String, String> result = new HashMap<>();
+        result.put("url", "/uploads/avatars/" + savedName);
+        return Result.success(result);
     }
 }
