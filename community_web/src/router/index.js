@@ -88,9 +88,20 @@ const routes = [
       {
         path: 'resources',
         name: 'Resources',
-        component: () => import('@/views/Placeholder.vue'),
-        props: { title: '资料库', icon: '📚', desc: '课件、笔记、书单上传与下载，支持评分' },
+        component: () => import('@/views/Resources.vue'),
         meta: { title: '资料库' },
+      },
+      {
+        path: 'resources/upload',
+        name: 'ResourceUpload',
+        component: () => import('@/views/ResourceUpload.vue'),
+        meta: { title: '上传资源' },
+      },
+      {
+        path: 'resources/:id',
+        name: 'ResourceDetail',
+        component: () => import('@/views/ResourceDetail.vue'),
+        meta: { title: '资源详情' },
       },
       // --- 个人 ---
       {

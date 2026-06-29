@@ -3,7 +3,7 @@ import { ElMessage } from 'element-plus'
 
 const request = axios.create({
   baseURL: 'http://localhost:8080/api',
-  timeout: 10000,
+  timeout: 60000,  // 60s，上传大文件时需要更长时间
 })
 
 // 请求拦截器 — 自动带 token
