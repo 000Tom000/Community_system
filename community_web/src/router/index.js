@@ -80,9 +80,26 @@ const routes = [
       {
         path: 'qa',
         name: 'QA',
-        component: () => import('@/views/Placeholder.vue'),
-        props: { title: '问答中心', icon: '❓', desc: '选课、实习、考研等经验问答' },
+        component: () => import('@/views/QAList.vue'),
         meta: { title: '问答中心' },
+      },
+      {
+        path: 'qa/ask',
+        name: 'QAAsk',
+        component: () => import('@/views/AskQuestion.vue'),
+        meta: { title: '提问' },
+      },
+      {
+        path: 'qa/:id',
+        name: 'QADetail',
+        component: () => import('@/views/QADetail.vue'),
+        meta: { title: '问题详情' },
+      },
+      {
+        path: 'qa/:id/edit',
+        name: 'QAEdit',
+        component: () => import('@/views/AskQuestion.vue'),
+        meta: { title: '编辑问题' },
       },
       // --- 学习资源 ---
       {
