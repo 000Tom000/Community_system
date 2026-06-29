@@ -34,9 +34,26 @@ const routes = [
       {
         path: 'notices',
         name: 'Notices',
-        component: () => import('@/views/Placeholder.vue'),
-        props: { title: '校园公告', icon: '📋', desc: '学校通知、学术讲座、社团活动发布' },
+        component: () => import('@/views/NoticeList.vue'),
         meta: { title: '校园公告' },
+      },
+      {
+        path: 'notices/create',
+        name: 'NoticeCreate',
+        component: () => import('@/views/CreateNotice.vue'),
+        meta: { title: '发布公告' },
+      },
+      {
+        path: 'notices/:id',
+        name: 'NoticeDetail',
+        component: () => import('@/views/NoticeDetail.vue'),
+        meta: { title: '公告详情' },
+      },
+      {
+        path: 'notices/:id/edit',
+        name: 'NoticeEdit',
+        component: () => import('@/views/CreateNotice.vue'),
+        meta: { title: '编辑公告' },
       },
       {
         path: 'lost-found',
