@@ -56,9 +56,26 @@ const routes = [
       {
         path: 'forum',
         name: 'Forum',
-        component: () => import('@/views/Placeholder.vue'),
-        props: { title: '论坛广场', icon: '💬', desc: '按院系或兴趣划分的讨论版块' },
+        component: () => import('@/views/Forum.vue'),
         meta: { title: '论坛广场' },
+      },
+      {
+        path: 'forum/create',
+        name: 'ForumCreate',
+        component: () => import('@/views/CreatePost.vue'),
+        meta: { title: '发帖' },
+      },
+      {
+        path: 'forum/:id',
+        name: 'PostDetail',
+        component: () => import('@/views/PostDetail.vue'),
+        meta: { title: '帖子详情' },
+      },
+      {
+        path: 'forum/:id/edit',
+        name: 'PostEdit',
+        component: () => import('@/views/CreatePost.vue'),
+        meta: { title: '编辑帖子' },
       },
       {
         path: 'qa',

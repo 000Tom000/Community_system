@@ -106,4 +106,14 @@ public class PostController {
         }
         return Result.success(Map.of("liked", liked));
     }
+
+    /** 标记已解决（问答，仅作者） */
+    @PutMapping("/{id}/solve")
+    public Result<Void> toggleSolved(
+            @RequestHeader("X-Token") String token,
+            @PathVariable Long id) {
+        Long uid = userService.getCurrentUser(token).getId();
+        postService.toggleSolved(uid, id);
+        return Result.success();
+    }
 }

@@ -31,8 +31,8 @@ public class PostMapper {
         p.setViewCount(rs.getInt("view_count"));
         p.setLikeCount(rs.getInt("like_count"));
         p.setCommentCount(rs.getInt("comment_count"));
-        p.setIsPinned(rs.getBoolean("is_pinned"));
-        p.setIsSolved(rs.getBoolean("is_solved"));
+        p.setIsPinned(rs.getInt("is_pinned") != 0);
+        p.setIsSolved(rs.getInt("is_solved") != 0);
         p.setStatus(rs.getInt("status"));
         // 时间戳可能为 null
         try { p.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime()); } catch (Exception e) {}
@@ -152,13 +152,13 @@ public class PostMapper {
     /** 置顶/取消置顶 */
     public void updatePinned(Long id, boolean pinned) {
         jdbc.update("UPDATE post SET is_pinned=?, updated_at=NOW() WHERE id=? AND status!=2",
-                pinned, id);
+                pinned ? 1 : 0, id);
     }
 
     /** 标记已解决（问答用） */
     public void updateSolved(Long id, boolean solved) {
         jdbc.update("UPDATE post SET is_solved=?, updated_at=NOW() WHERE id=? AND status!=2",
-                solved, id);
+                solved ? 1 : 0, id);
     }
 
     /** 更新评论数（评论模块会用） */
