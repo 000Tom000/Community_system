@@ -3,6 +3,7 @@ import { ref, reactive, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import { createItem, updateItem, getItem } from '@/api/secondhand'
+import { uploadImage } from '@/api/upload'
 import { ElMessage } from 'element-plus'
 
 const route = useRoute()
@@ -29,6 +30,7 @@ const isEdit = route.path.includes('/edit')
 const editId = isEdit ? Number(route.params.id) : null
 const loading = ref(false)
 const submitting = ref(false)
+const imageUploading = ref(false)
 
 const form = reactive({
   category: 'other',
@@ -69,6 +71,26 @@ onMounted(async () => {
     finally { loading.value = false }
   }
 })
+
+/** 图片上传 */
+async function handleImageChange(file) {
+  if (!file.raw.type.startsWith('image/')) { ElMessage.warning('请选择图片文件'); return }
+  if (file.raw.size > 5 * 1024 * 1024) { ElMessage.warning('图片不能超过 5MB'); return }
+  imageUploading.value = true
+  try {
+    const res = await uploadImage(file.raw)
+    form.imageUrl = res.data.url
+    ElMessage.success('图片上传成功')
+  } catch { /* 拦截器已提示 */ }
+  finally { imageUploading.value = false }
+}
+
+function imagePreviewUrl() {
+  const url = form.imageUrl
+  if (!url) return ''
+  if (url.startsWith('http://') || url.startsWith('https://')) return url
+  return url
+}
 
 async function handleSubmit() {
   if (!form.title.trim()) { ElMessage.warning('请输入商品名称'); return }
@@ -145,8 +167,24 @@ function goBack() {
         <el-form-item label="联系方式">
           <el-input v-model="form.contact" placeholder="手机号/QQ/微信…" maxlength="100" />
         </el-form-item>
-        <el-form-item label="图片URL">
-          <el-input v-model="form.imageUrl" placeholder="可选，粘贴商品图片链接…" maxlength="500" />
+        <el-form-item label="商品图片">
+          <div class="image-upload">
+            <el-image v-if="form.imageUrl" :src="imagePreviewUrl()" fit="cover"
+                      style="width:120px;height:120px;border-radius:6px;margin-right:12px" />
+            <el-upload
+              :auto-upload="false"
+              :show-file-list="false"
+              :on-change="handleImageChange"
+              accept="image/*"
+            >
+              <el-button :loading="imageUploading" size="small">
+                {{ form.imageUrl ? '更换图片' : '点击上传' }}
+              </el-button>
+              <template #tip>
+                <div class="el-upload__tip">支持 JPG/PNG/GIF，最大 5MB</div>
+              </template>
+            </el-upload>
+          </div>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" :loading="submitting" @click="handleSubmit">
@@ -161,4 +199,5 @@ function goBack() {
 
 <style scoped>
 .create-page { max-width: 800px; margin: 0 auto; padding: 20px 0; }
+.image-upload { display: flex; align-items: center; }
 </style>
